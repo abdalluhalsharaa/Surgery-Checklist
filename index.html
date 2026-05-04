@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Surgery Checklist 🪓</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#121a2b;
+      --text:#e9eefc;
+      --muted:#a8b3d6;
+      --accent:#4cc9f0;
+      --danger:#ff4d4d;
+      --bar:#1e2a45;
+      --barFill:#38bdf8;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1000px 600px at 20% 10%, #14213d 0%, var(--bg) 55%) fixed;
+      color:var(--text);
+    }
+
+    .wrap{
+      max-width: 860px;
+      margin: 32px auto;
+      padding: 0 16px 40px;
+    }
+
+    header{
+      background: linear-gradient(180deg, rgba(76,201,240,.18), rgba(18,26,43,.0));
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 18px 18px 16px;
+      position: sticky;
+      top: 12px;
+      backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+
+    h1{
+      margin: 0 0 8px;
+      font-size: 26px;
+      letter-spacing: .2px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .sub{
+      margin:0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .progressRow{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .stats{
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .bar{
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: var(--bar);
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .fill{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--barFill), var(--accent));
+      border-radius: 999px;
+      transition: width .25s ease;
+    }
+
+    .controls{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    button{
+      appearance:none;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight: 600;
+      transition: transform .05s ease, background .2s ease, border-color .2s ease;
+    }
+    button:hover{ background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.18); }
+    button:active{ transform: scale(.98); }
+    .dangerBtn{ border-color: rgba(255,77,77,.35); }
+    .dangerBtn:hover{ background: rgba(255,77,77,.12); }
+
+    main{
+      margin-top: 18px;
+      background: rgba(18,26,43,.70);
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .list{
+      list-style:none;
+      margin:0;
+      padding:0;
+      display:grid;
+      gap: 10px;
+    }
+
+    .item{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
+      cursor:pointer;
+      user-select:none;
+      transition: background .2s ease, border-color .2s ease;
+    }
+    .item:hover{
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.12);
+    }
+
+    .check{
+      width: 22px;
+      height: 22px;
+      border-radius: 7px;
+      border: 2px solid rgba(255,255,255,.35);
+      display:grid;
+      place-items:center;
+      flex: 0 0 auto;
+    }
+    .check svg{ opacity:0; transform: scale(.7); transition: all .18s ease; }
+
+    .title{
+      font-size: 16px;
+      line-height: 1.35;
+      font-weight: 650;
+      color: var(--text);
+    }
+    .hint{
+      margin-left:auto;
+      color: var(--muted);
+      font-size: 12px;
+      opacity: .95;
+    }
+
+    /* Checked state: red + strikethrough */
+    .item.checked{
+      border-color: rgba(255,77,77,.35);
+      background: rgba(255,77,77,.07);
+    }
+    .item.checked .title{
+      color: var(--danger);
+      text-decoration: line-through;
+      text-decoration-thickness: 2px;
+    }
+    .item.checked .check{
+      border-color: rgba(76,201,240,.6);
+      background: rgba(76,201,240,.16);
+    }
+    .item.checked .check svg{
+      opacity:1;
+      transform: scale(1);
+    }
+
+    footer{
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align:center;
+    }
+
+    /* Reduce motion preference */
+    @media (prefers-reduced-motion: reduce){
+      .fill, .item, .check svg { transition:none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <h1>🪓 Surgery Checklist</h1>
+      <p class="sub">
+        اضغط على اسم المحاضرة للتعليم عليها (تتحول للأحمر مع خط). التقدم محفوظ تلقائيًا على نفس الجهاز.
+      </p>
+
+      <div class="progressRow">
+        <div class="stats" id="statsText">0% — 0/38</div>
+        <div class="stats" id="remainingText">Remaining: 38</div>
+      </div>
+
+      <div class="bar" aria-label="Progress bar">
+        <div class="fill" id="progressFill"></div>
+      </div>
+
+      <div class="controls">
+        <button id="markAllBtn" title="Mark all as done">Mark all ✅</button>
+        <button id="unmarkAllBtn" title="Unmark all">Unmark all ↩️</button>
+        <button class="dangerBtn" id="resetBtn" title="Clear saved progress">Reset (clear saved) 🧹</button>
+      </div>
+    </header>
+
+    <main>
+      <ul class="list" id="lectureList" aria-label="Lecture checklist"></ul>
+    </main>
+
+    <footer>
+      Built as a single-file GitHub Pages site ✨
+    </footer>
+  </div>
+
+  <script>
+    // ========= Data =========
+    const lectures = [
+      "Shock",
+      "Fluids",
+      "Abdominal X-ray",
+      "Surgical site infection",
+      "Appendicitis",
+      "Intestinal Obstruction",
+      "Hernia",
+      "Gallbladder and biliary tract disorders",
+      "Acute pancreatitis",
+      "Burns I",
+      "Burns II",
+      "Coagulation and blood transfusion",
+      "Peri anal surgical",
+      "Skin tumors",
+      "Benign breast diseases",
+      "Malignant breast diseases",
+      "Polyps & colon cancer",
+      "Peripheral arterial disease (PAD)",
+      "Varicose veins & deep veins insufficiency",
+      "Pleural Space Diseases",
+      "Head and neck swelling",
+      "Thyroid gland",
+      "Surgical pathologies of stomach and duodenum",
+      "Spleen, liver and portal hypertension",
+      "Inflammatory bowel disease",
+      "Diverticular disease",
+      "Lung Neoplasms",
+      "Mediastinal Disorders",
+      "Common problems in Paediatric Surgery I",
+      "Common problems in Paediatric Surgery II",
+      "Cleft lip and palate",
+      "Maxillofacial injuries",
+      "Neck (cervical) trauma",
+      "Esophagus",
+      "Lymphedema",
+      "Parathyroid gland",
+      "Adrenal gland",
+      "Acute aortic syndrome"
+    ];
+    const TOTAL = lectures.length; // should be 38
+
+    // ========= Storage =========
+    const STORAGE_KEY = "surgeryChecklist_v1";
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return new Array(TOTAL).fill(false);
+        const parsed = JSON.parse(raw);
+        // Safety: ensure correct length
+        if(!Array.isArray(parsed) || parsed.length !== TOTAL) return new Array(TOTAL).fill(false);
+        return parsed.map(Boolean);
+      }catch{
+        return new Array(TOTAL).fill(false);
+      }
+    }
+    function saveState(state){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    // ========= UI =========
+    const listEl = document.getElementById("lectureList");
+    const statsText = document.getElementById("statsText");
+    const remainingText = document.getElementById("remainingText");
+    const progressFill = document.getElementById("progressFill");
+
+    const markAllBtn = document.getElementById("markAllBtn");
+    const unmarkAllBtn = document.getElementById("unmarkAllBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    let state = loadState();
+
+    function makeItem(title, index){
+      const li = document.createElement("li");
+      li.className = "item";
+      li.setAttribute("role", "button");
+      li.setAttribute("tabindex", "0");
+      li.dataset.index = index;
+
+      li.innerHTML = `
+        <div class="check" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="title"></div>
+        <div class="hint">click</div>
+      `;
+      li.querySelector(".title").textContent = title;
+
+      // toggle on click
+      li.addEventListener("click", () => toggle(index));
+
+      // toggle on Enter/Space for accessibility
+      li.addEventListener("keydown", (e) => {
+        if(e.key === "Enter" || e.key === " "){
+          e.preventDefault();
+          toggle(index);
+        }
+      });
+
+      return li;
+    }
+
+    function render(){
+      listEl.innerHTML = "";
+      lectures.forEach((t, i) => {
+        const item = makeItem(t, i);
+        if(state[i]) item.classList.add("checked");
+        listEl.appendChild(item);
+      });
+      updateProgress();
+    }
+
+    function toggle(index){
+      state[index] = !state[index];
+      saveState(state);
+
+      // Update only that item for speed
+      const item = listEl.querySelector(`.item[data-index="${index}"]`);
+      if(item) item.classList.toggle("checked", state[index]);
+
+      updateProgress();
+    }
+
+    function updateProgress(){
+      const done = state.filter(Boolean).length;
+      const percent = Math.round((done / TOTAL) * 100);
+      statsText.textContent = `${percent}% — ${done}/${TOTAL}`;
+      remainingText.textContent = `Remaining: ${TOTAL - done}`;
+      progressFill.style.width = `${percent}%`;
+    }
+
+    // Controls
+    markAllBtn.addEventListener("click", () => {
+      state = new Array(TOTAL).fill(true);
+      saveState(state);
+      render();
+    });
+
+    unmarkAllBtn.addEventListener("click", () => {
+      state = new Array(TOTAL).fill(false);
+      saveState(state);
+      render();
+    });
+
+    resetBtn.addEventListener("click", () => {
+      localStorage.removeItem(STORAGE_KEY);
+      state = new Array(TOTAL).fill(false);
+      render();
+    });
+
+    // Init
+    render();
+  </script>
+</body>
+</html>
